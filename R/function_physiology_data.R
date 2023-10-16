@@ -8,12 +8,11 @@
 #' physiology_data()
 #' }
 physiology_data <- function() {
-  library(pacman)
-  p_load(FormShare, dplyr)
+  pacman::p_load(dplyr)
 
   # Create a new connection to FormShare
   cat("Logging in... \n")
-  my_connection <- FormShare$new(
+  my_connection <- FormShare::FormShare$new(
     server_url = "https://formshare.alliance.cgiar.org",
     user_id = "jssoto",
     api_key = "a00ecc62-240b-4ab1-8c4f-6192b0adecb6",
@@ -71,7 +70,19 @@ physiology_data <- function() {
   tables <- my_connection$get_tables(my_repositories$form_schema[index])$table_name
 
   metadata <- my_connection$execute(my_repositories$form_schema[index], paste0("SELECT * FROM ", tables[1]))
-  data <- my_connection$execute(my_repositories$form_schema[index], paste0("SELECT * FROM ", tables[2]))
+
+  if (length(tables) == 2) {
+    data <- my_connection$execute(my_repositories$form_schema[index], paste0("SELECT * FROM ", tables[2]))
+  } else {
+    data <- lapply(
+      tables[2:length(tables)],
+      function(x) my_connection$execute(my_repositories$form_schema[index], paste0("SELECT * FROM ", x))
+    )
+    for (i in 1:length(data)) {
+      names(data)[i] <- tables[i + 1]
+    }
+    rm(i)
+  }
 
   return(list(
     form_name = unicos[repo],
