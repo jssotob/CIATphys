@@ -10,13 +10,34 @@
 physiology_data <- function() {
   pacman::p_load(dplyr)
 
+  # users
+
+
+  users <- c("jssoto", "JRICAURTE")
+  api_key <- c("a00ecc62-240b-4ab1-8c4f-6192b0adecb6", "790c1e21-308d-433d-a7dd-7cd40ce5a6da")
+  api_secret <- c("579f865f55aba4de799b2fbce7ae566f", "9408f52d2519ced695a4955b53dd5313")
+
+  users_lab <- sapply(users, function(x) paste0("\t", which(users == x), ". ", x, " \n")) %>%
+    unname() %>%
+    paste0(., collapse = " ")
+
+
+  user_id <- suppressWarnings((readline(paste0("Select a FormShare user: ", "\n \n", users_lab))) %>%
+                             as.numeric())
+
+
+  while (!is.numeric(user_id) | is.na(user_id) | user_id < 0 | user_id > length(users)) {
+    user_id <- (readline(paste0("Wrong answer. Try again. Select a FormShare user: ", "\n \n", users_lab))) %>%
+      as.numeric()
+  }
+
   # Create a new connection to FormShare
-  cat("Logging in... \n")
+  cat(paste0("Logging in ", users[user_id],"\n"))
   my_connection <- FormShare::FormShare$new(
     server_url = "https://formshare.alliance.cgiar.org",
-    user_id = "jssoto",
-    api_key = "a00ecc62-240b-4ab1-8c4f-6192b0adecb6",
-    api_secret = "579f865f55aba4de799b2fbce7ae566f"
+    user_id = users[2],
+    api_key = api_key[2],
+    api_secret = api_secret[2]
   )
   # Login
   my_connection$login()
