@@ -35,9 +35,9 @@ physiology_data <- function() {
   cat(paste0("Logging in ", users[user_id],"\n"))
   my_connection <- FormShare::FormShare$new(
     server_url = "https://formshare.alliance.cgiar.org",
-    user_id = users[2],
-    api_key = api_key[2],
-    api_secret = api_secret[2]
+    user_id = users[user_id],
+    api_key = api_key[user_id],
+    api_secret = api_secret[user_id]
   )
   # Login
   my_connection$login()
